@@ -35,20 +35,25 @@ public class ChangePasswordCommand extends CommandBase {
 			EntityPlayer player = (EntityPlayer) sender;
 			if (args.length > 0) {
 				String password = args[0].trim();
-				if (DbContext.users.exists(player.getName())) {
-					User user = DbContext.users.get(player.getName());
-					if (user != null) {
-						if (user._isLogged) {
-							password = TextUtils.stringToHex(password);
-							DbContext.users.changePassword(player.getName(), password);
-							MessageUtils.sendMessage(player, "Heslo uspesne zmeneno!", Color.Green);
-						} else {
-							MessageUtils.sendMessage(player, "Pro zmenu hesla se nejprve musis prihlasit!",
-									Color.Yellow);
+				if (password.length() >= 6 && password.length() < 128) {
+					if (DbContext.users.exists(player.getName())) {
+						User user = DbContext.users.get(player.getName());
+						if (user != null) {
+							if (user._isLogged) {
+								password = TextUtils.stringToHex(password);
+								DbContext.users.changePassword(player.getName(), password);
+								MessageUtils.sendMessage(player, "Heslo uspesne zmeneno!", Color.Green);
+							} else {
+								MessageUtils.sendMessage(player, "Pro zmenu hesla se nejprve musis prihlasit!",
+										Color.Yellow);
+							}
 						}
+					} else {
+						MessageUtils.sendMessage(player, "Nejsi zaregistrovany! Pouzij /register <heslo>", Color.Red);
 					}
 				} else {
-					MessageUtils.sendMessage(player, "Nejsi zaregistrovany! Pouzij /register <heslo>", Color.Red);
+					MessageUtils.sendMessage(player, "Heslo musi byt dlouhe alespon 6 znaku a kratsi nez 128 znaku!",
+							Color.Yellow);
 				}
 			} else {
 				MessageUtils.sendMessage(player, "Pouziti: /changepw <nove heslo>", Color.Yellow);

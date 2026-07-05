@@ -36,7 +36,12 @@ public class RegisterCommand extends CommandBase {
 			EntityPlayer player = (EntityPlayer) sender;
 			if (args.length > 0) {
 				String password = args[0].trim();
-				register(player, password);
+				if (password.length() >= 6 && password.length() < 128) {
+					register(player, password);
+				} else {
+					MessageUtils.sendMessage(player, "Heslo musi byt dlouhe alespon 6 znaku a kratsi nez 128 znaku!",
+							Color.Yellow);
+				}
 			} else {
 				MessageUtils.sendMessage(player, "Nezadal jsi heslo.", Color.Red);
 			}

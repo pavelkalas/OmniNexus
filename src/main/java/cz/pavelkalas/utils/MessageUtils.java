@@ -1,6 +1,8 @@
 package main.java.cz.pavelkalas.utils;
 
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
@@ -35,6 +37,27 @@ public class MessageUtils {
 		TextFormatting col = getColor(color);
 		msg.getStyle().setColor(col);
 		player.sendMessage(msg);
+	}
+
+	/**
+	 * Pošle jednoduchou zprávu hráči
+	 * 
+	 * @param sender  - Instance hráče ale v ICommandSenderu
+	 * @param message - Zpráva
+	 * @param color   - Barva
+	 */
+	public static void sendMessage(ICommandSender sender, String message, Color color) {
+		EntityPlayer player = null;
+		if (sender instanceof EntityPlayerMP || sender instanceof EntityPlayer) {
+			player = (EntityPlayer) sender;
+		}
+
+		if (player != null) {
+			TextComponentString msg = new TextComponentString(message);
+			TextFormatting col = getColor(color);
+			msg.getStyle().setColor(col);
+			player.sendMessage(msg);
+		}
 	}
 
 	/**

@@ -7,47 +7,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import main.java.cz.pavelkalas.models.User;
+
+/**
+ * Jednoduchá custom databáze pro hráče.
+ */
 public class DbUserProvider {
+	/**
+	 * Cesta k databázi
+	 */
 	private final String dbFile;
 
-	public static class User {
-		private String name;
-		private String password;
-		public boolean _isLogged;
-
-		public User(String name, String password) {
-			this.name = name;
-			this.password = password;
-			this._isLogged = false;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public String getPassword() {
-			return this.password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
-		public boolean nameMatches(final String player) {
-			return this.name.equalsIgnoreCase(player);
-		}
-
-		public boolean passwordMatches(final String password) {
-			return this.password.equals(password);
-		}
-
-		public boolean valid() {
-			return !name.contains("§") && !name.contains("§");
-		}
-	}
-
+	/**
+	 * List registrovaných uživatelů.
+	 */
 	private final ArrayList<User> users = new ArrayList<User>();
 
+	/**
+	 * Inicializuje databázi.
+	 * 
+	 * @param dbFile - Soubor databáze
+	 */
 	public DbUserProvider(final String dbFile) {
 		this.dbFile = dbFile;
 		if (dbFile == null) {
@@ -56,6 +36,12 @@ public class DbUserProvider {
 		load();
 	}
 
+	/**
+	 * Změní uživatelovi heslo
+	 * 
+	 * @param name     - Uživatel
+	 * @param password - Nové heslo
+	 */
 	public void changePassword(String name, String password) {
 		if (name == null) {
 			throw new IllegalArgumentException("Name cannot be null.");
@@ -72,6 +58,12 @@ public class DbUserProvider {
 		}
 	}
 
+	/**
+	 * Navrátí uživatele v případě, že byl nalezen.
+	 * 
+	 * @param name - Jméno uživatele
+	 * @return - Instance uživatele pokud nalezen, jinak NULL.
+	 */
 	public User get(String name) {
 		if (name == null) {
 			throw new RuntimeException("Name cannot be null!");
@@ -86,6 +78,12 @@ public class DbUserProvider {
 		return null;
 	}
 
+	/**
+	 * Přidá uživatele do databáze
+	 * 
+	 * @param user - Instance uživatele
+	 * @return - Navrací TRUE v případě, že se úspěšně přidal bez chyb.
+	 */
 	public boolean add(User user) {
 		if (user == null) {
 			throw new IllegalArgumentException("User cannot be null!");
@@ -100,6 +98,11 @@ public class DbUserProvider {
 		return ok;
 	}
 
+	/**
+	 * Odstraní uživatele z databáze na základě jména, pokud existuje.
+	 * 
+	 * @param name - Jméno užiatele
+	 */
 	public void remove(String name) {
 		int index = 0;
 		boolean found = false;
@@ -116,16 +119,9 @@ public class DbUserProvider {
 		}
 	}
 
-	private String getDb() {
-		String dbContext = "";
-
-		for (User u : users) {
-			dbContext += "#user=" + u.getName() + "§" + u.getPassword() + "\n";
-		}
-
-		return dbContext.trim();
-	}
-
+	/**
+	 * Načítá existující databázi uživatelů do listu.
+	 */
 	private void load() {
 		if (dbFile == null) {
 			throw new RuntimeException("DB_FILE is null!");
@@ -158,6 +154,12 @@ public class DbUserProvider {
 		}
 	}
 
+	/**
+	 * Kontroluje existenci uživatele podle jména.
+	 * 
+	 * @param name - Jméno uživatele
+	 * @return Navrací TRUE pokud uživatel existuje, jinak FALSE.
+	 */
 	public boolean exists(String name) {
 		if (name == null) {
 			throw new RuntimeException("Name cannot be null!");
@@ -166,6 +168,11 @@ public class DbUserProvider {
 		return get(name) != null;
 	}
 
+	/**
+	 * Ukládá databázi do souboru.
+	 * 
+	 * @return - Navrací TRUE pokud uložení proběhlo úspěšně
+	 */
 	public boolean save() {
 		if (dbFile == null) {
 			throw new RuntimeException("DB_FILE is null!");
@@ -181,7 +188,11 @@ public class DbUserProvider {
 			}
 		}
 
-		String dbContent = getDb();
+		String dbContent = "";
+
+		for (User u : users) {
+			dbContent += "#user=" + u.getName() + "§" + u.getPassword() + "\n";
+		}
 
 		try {
 			FileWriter fileWriter = new FileWriter(file);

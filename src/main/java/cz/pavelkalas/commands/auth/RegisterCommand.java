@@ -1,15 +1,14 @@
 package main.java.cz.pavelkalas.commands.auth;
 
 import main.java.cz.pavelkalas.core.DbContext;
+import main.java.cz.pavelkalas.models.User;
 import main.java.cz.pavelkalas.provider.DbUserProvider;
-import main.java.cz.pavelkalas.provider.DbUserProvider.User;
 import main.java.cz.pavelkalas.utils.MessageUtils;
 import main.java.cz.pavelkalas.utils.TextUtils;
 import main.java.cz.pavelkalas.utils.MessageUtils.Color;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 
@@ -18,6 +17,9 @@ import net.minecraft.server.MinecraftServer;
  */
 public class RegisterCommand extends CommandBase {
 
+	/**
+	 * Instance databáze uživatelů.
+	 */
 	private final DbUserProvider userDb = DbContext.users;
 
 	@Override
@@ -39,8 +41,7 @@ public class RegisterCommand extends CommandBase {
 				if (password.length() >= 6 && password.length() < 128) {
 					register(player, password);
 				} else {
-					MessageUtils.sendMessage(player, "Heslo musi byt dlouhe alespon 6 znaku a kratsi nez 128 znaku!",
-							Color.Yellow);
+					MessageUtils.sendMessage(player, "Heslo musi byt dlouhe alespon 6 znaku a kratsi nez 128 znaku!", Color.Yellow);
 				}
 			} else {
 				MessageUtils.sendMessage(player, "Nezadal jsi heslo.", Color.Red);

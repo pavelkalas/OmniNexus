@@ -1,15 +1,18 @@
 package main.java.cz.pavelkalas.commands.auth;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import main.java.cz.pavelkalas.core.DbContext;
+import main.java.cz.pavelkalas.models.User;
 import main.java.cz.pavelkalas.provider.DbUserProvider;
-import main.java.cz.pavelkalas.provider.DbUserProvider.User;
 import main.java.cz.pavelkalas.utils.MessageUtils;
 import main.java.cz.pavelkalas.utils.MessageUtils.Color;
+import main.java.cz.pavelkalas.utils.PlayerUtils;
 import main.java.cz.pavelkalas.utils.TextUtils;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 
@@ -18,7 +21,20 @@ import net.minecraft.server.MinecraftServer;
  */
 public class LoginCommand extends CommandBase {
 
+	/**
+	 * Instance databáze uživatelů.
+	 */
 	private final DbUserProvider userDb = DbContext.users;
+
+	/**
+	 * Mapa pokusů o přihlášení.
+	 */
+	private final Map<UUID, Integer> loginAttempts = new HashMap<>();
+
+	/**
+	 * Definice maximálních pokusů o přihlášení před vyhozením.
+	 */
+	private final int MAX_LOGIN_ATTEMPTS = 3;
 
 	@Override
 	public String getName() {
@@ -58,13 +74,37 @@ public class LoginCommand extends CommandBase {
 		password = TextUtils.stringToHex(password);
 
 		User user = userDb.get(player.getName());
+
+		if (user != null && user._isLogged) {
+			MessageUtils.sendMessage(player, "Jsi jiz prihlasen!", Color.Yellow);
+			return;
+		}
+
 		if (user != null) {
 			if (user.passwordMatches(password)) {
-				MessageUtils.sendMessage(player, "Uspesne prihlasen!", Color.Green);
 				user._isLogged = true;
+				MessageUtils.sendMessage(player, "Uspesne prihlasen!", Color.Green);
+				if (loginAttempts.containsKey(player.getUniqueID())) {
+					loginAttempts.remove(player.getUniqueID());
+				}
 			} else {
 				MessageUtils.sendMessage(player, "Spatne heslo!", Color.Red);
+				if (loginAttempts.containsKey(player.getUniqueID())) {
+					int value = loginAttempts.get(player.getUniqueID()) - 1;
+
+					if (value <= 1) {
+						PlayerUtils.kickPlayer(player, "Prilis mnoho pokusu o prihlaseni!");
+						loginAttempts.remove(player.getUniqueID());
+						return;
+					}
+
+					loginAttempts.put(player.getUniqueID(), value);
+				} else {
+					loginAttempts.put(player.getUniqueID(), MAX_LOGIN_ATTEMPTS);
+				}
 			}
+		} else {
+			MessageUtils.sendMessage(player, "Nejsi zaregistrovan! Pouzij /register [heslo]", Color.Yellow);
 		}
 	}
 }

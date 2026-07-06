@@ -1,8 +1,8 @@
 package main.java.cz.pavelkalas.commands.auth;
 
 import main.java.cz.pavelkalas.core.DbContext;
+import main.java.cz.pavelkalas.models.User;
 import main.java.cz.pavelkalas.provider.DbUserProvider;
-import main.java.cz.pavelkalas.provider.DbUserProvider.User;
 import main.java.cz.pavelkalas.utils.MessageUtils;
 import main.java.cz.pavelkalas.utils.MessageUtils.Color;
 import main.java.cz.pavelkalas.utils.TextUtils;

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import main.java.cz.pavelkalas.core.DbContext;
-import main.java.cz.pavelkalas.provider.DbUserProvider.User;
+import main.java.cz.pavelkalas.models.User;
 import main.java.cz.pavelkalas.utils.MessageUtils;
 import main.java.cz.pavelkalas.utils.MessageUtils.Color;
 import net.minecraft.entity.player.EntityPlayer;
